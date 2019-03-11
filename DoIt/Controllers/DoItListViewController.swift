@@ -11,8 +11,8 @@ import UIKit
 class DoItListViewController: UITableViewController {
     
     var itemArray = [Item]()
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
-    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +35,7 @@ class DoItListViewController: UITableViewController {
         
         
         
-//        if let items = defaults.array(forKey: "DoItListArray") as? [String] {
+//        if let items = defaults.array(forKey: "DoItListArray") as? [Item] {
 //            itemArray = items
 //        }
         // Do any additional setup after loading the view, typically from a nib.
@@ -68,7 +68,7 @@ class DoItListViewController: UITableViewController {
         
         itemArray[indexPath.row].done.toggle()
         
-        tableView.reloadData()
+        saveItems()
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -86,11 +86,11 @@ class DoItListViewController: UITableViewController {
             
             let newItem = Item()
             newItem.title = textField.text!
+            
             self.itemArray.append(newItem)
+
+            self.saveItems()
             
-            self.defaults.set(self.itemArray, forKey: "DoItListArray")
-            
-            self.tableView.reloadData()
         }
         
         alert.addTextField { (alertTextField) in
@@ -104,5 +104,19 @@ class DoItListViewController: UITableViewController {
         
     }
     
+    //MARK - Model Manupulation Methods
+    
+    func saveItems() {
+        let encoder = PropertyListEncoder()
+        
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item array \(error)")
+        }
+        
+        self.tableView.reloadData()
+    }
     
 }

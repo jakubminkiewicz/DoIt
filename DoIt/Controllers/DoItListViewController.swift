@@ -10,16 +10,34 @@ import UIKit
 
 class DoItListViewController: UITableViewController {
     
-    var itemArray = ["Find egg","Eat egg","Worship egg"]
+    var itemArray = [Item]()
     
     let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let items = defaults.array(forKey: "DoItListArray") as? [String] {
-            itemArray = items
-        }
+        let newItem = Item()
+        newItem.title = "Find egg"
+        itemArray.append(newItem)
+        
+        let newItem1 = Item()
+        newItem1.title = "Find egg1"
+        itemArray.append(newItem1)
+        
+        let newItem2 = Item()
+        newItem2.title = "Find egg2"
+        itemArray.append(newItem2)
+        
+        let newItem3 = Item()
+        newItem3.title = "Find egg3"
+        itemArray.append(newItem3)
+        
+        
+        
+//        if let items = defaults.array(forKey: "DoItListArray") as? [String] {
+//            itemArray = items
+//        }
         // Do any additional setup after loading the view, typically from a nib.
     }
     
@@ -32,7 +50,12 @@ class DoItListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "DoItItemCell", for: indexPath)
-        cell.textLabel?.text = itemArray[indexPath.row]
+        
+        let item = itemArray[indexPath.row]
+        
+        cell.textLabel?.text = item.title
+        
+        cell.accessoryType = item.done ? .checkmark : .none
         
         return cell
     }
@@ -41,13 +64,11 @@ class DoItListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        print(itemArray[indexPath.row])
+//        print(itemArray[indexPath.row])
         
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        itemArray[indexPath.row].done.toggle()
+        
+        tableView.reloadData()
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -62,7 +83,10 @@ class DoItListViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             //What will happen once user clicks the Add Item button
-            self.itemArray.append(textField.text!)
+            
+            let newItem = Item()
+            newItem.title = textField.text!
+            self.itemArray.append(newItem)
             
             self.defaults.set(self.itemArray, forKey: "DoItListArray")
             

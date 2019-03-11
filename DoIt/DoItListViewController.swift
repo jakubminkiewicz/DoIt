@@ -11,9 +11,15 @@ import UIKit
 class DoItListViewController: UITableViewController {
     
     var itemArray = ["Find egg","Eat egg","Worship egg"]
+    
+    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let items = defaults.array(forKey: "DoItListArray") as? [String] {
+            itemArray = items
+        }
         // Do any additional setup after loading the view, typically from a nib.
     }
     
@@ -56,7 +62,9 @@ class DoItListViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             //What will happen once user clicks the Add Item button
-            self.itemArray.append(textField.text ?? "")
+            self.itemArray.append(textField.text!)
+            
+            self.defaults.set(self.itemArray, forKey: "DoItListArray")
             
             self.tableView.reloadData()
         }
